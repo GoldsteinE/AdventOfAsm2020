@@ -5,6 +5,17 @@
 
 .section .text
 
+# Choose between first and second part of the task
+.macro chooseimpl reg, first, second
+	mov \reg, offset \first
+	mov rax, [rsp]
+	mov rbx, 1
+	cmp rax, rbx
+	je .Lvariantchosen
+	mov \reg, offset \second
+	.Lvariantchosen:
+.endm
+
 .macro trysyscall
 	syscall
 	# rcx may be clobbered by syscall anyway

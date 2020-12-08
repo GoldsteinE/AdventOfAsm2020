@@ -3,32 +3,32 @@
 .section .text
 
 # type: (int* start, int* end) -> int
-.global find2020
-find2020:
+.global find2_2020
+find2_2020:
 	mov rax, rdi
 	mov rbx, rdi
 	mov r8, 2020
-.Lfind2020.loop:
+.Lfind2_2020.loop:
 	mov rcx, [rax]
 	mov rdx, [rbx]
 	add rcx, rdx
 	cmp rcx, r8
-	je .Lfind2020.end
+	je .Lfind2_2020.end
 	add rbx, 8
 	cmp rbx, rsi
-	jg .Lfind2020.continue
-	jmp .Lfind2020.loop
-.Lfind2020.continue:
+	jg .Lfind2_2020.continue
+	jmp .Lfind2_2020.loop
+.Lfind2_2020.continue:
 	mov rbx, rax
 	add rax, 8
 	cmp rax, rsi
-	jg .Lfind2020.error
-	jmp .Lfind2020.loop
-.Lfind2020.error:
+	jg .Lfind2_2020.error
+	jmp .Lfind2_2020.loop
+.Lfind2_2020.error:
 	mov rax, SYS_EXIT
 	mov rdi, 255
 	syscall
-.Lfind2020.end:
+.Lfind2_2020.end:
 	mov rax, [rax]
 	imul rax, rdx
 	ret
@@ -79,6 +79,8 @@ find3_2020:
 
 .global _start
 _start:
+	chooseimpl r15, find2_2020, find3_2020
+
 	sub rsp, 16
 	mov r13, rsp
 
@@ -103,17 +105,7 @@ _start:
 
 	mov rdi, rsp
 	lea rsi, [r13 - 8]
-
-	mov r8, [r13 + 16]
-	mov r9, 1
-	cmp r8, r9
-	jne .L_start.mode3
-.L_start.mode2:
-	call find2020
-	jmp .L_start.mode_end
-.L_start.mode3:
-	call find3_2020
-.L_start.mode_end:
+	call r15
 
 	mov rdi, rax
 	mov rsi, r13

@@ -103,13 +103,8 @@ check_line2:
 
 .global _start
 _start:
-	mov r14, offset check_line1
-	mov rax, [rsp]
-	mov rbx, 1
-	cmp rax, rbx
-	je .L_start.init
-	mov r14, offset check_line2
-.L_start.init:
+	chooseimpl r14, check_line1, check_line2
+
 	xor r15, r15
 	sub rsp, 128
 .L_start.loop:
