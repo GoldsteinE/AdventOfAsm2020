@@ -1,6 +1,6 @@
 .include "stdlib.s"
 
-.section text
+.section .text
 
 # type: ???
 .global solve1
