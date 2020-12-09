@@ -22,8 +22,17 @@ runstd2 target: (build target)
 
 dbg target: (build target)
 	#!/bin/sh
+	set -e
 	if type ugdb >/dev/null; then
 		ugdb "{{target}}/exe"
 	else
 		gdb "{{target}}/exe"
 	fi
+
+init target:
+	mkdir "{{target}}"
+	cp template.s "{{target}}/code.s"
+	: Enter example input, end with ^D:
+	cat > "{{target}}/example.txt"
+	: Enter main input, end with ^D:
+	cat >> "{{target}}/inp.txt"
