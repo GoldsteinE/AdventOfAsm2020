@@ -1,0 +1,3 @@
+input: rdi, rsi, rdx, r10, r8, r9
+output: rax, rbx, rcx, rdx, r8, r9
+no clobber: r12, r13, r14, r15
