@@ -1,11 +1,5 @@
 .include "stdlib.s"
 
-.section .data
-password: .ascii "Password: "
-lower: .ascii "Lower: "
-upper: .ascii "Upper: "
-character: .ascii "Character: "
-
 .section .text
 
 # type: (char* buf, int len)
