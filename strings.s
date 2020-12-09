@@ -15,6 +15,22 @@ strlen:
 	sub rax, rdi
 	ret
 
+# type: (char* dest, char* src, int len) -> void
+.global strncpy
+strncpy:
+	xor rax, rax
+.Lstrncpy.loop:
+	cmp rdx, rax
+	je .Lstrncpy.end
+	mov cl, [rsi]
+	mov [rdi], cl
+	inc rsi
+	inc rdi
+	dec rdx
+	jmp .Lstrncpy.loop
+.Lstrncpy.end:
+	ret
+
 # type: (char* buf, int len) -> void
 .global reverse_string
 reverse_string:
