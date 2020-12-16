@@ -2,6 +2,7 @@
 
 .include "constants.s"
 .include "strings.s"
+.include "lists.s"
 
 .section .text
 
