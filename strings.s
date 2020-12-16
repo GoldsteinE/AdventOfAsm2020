@@ -31,6 +31,80 @@ strncpy:
 .Lstrncpy.end:
 	ret
 
+# type: (char* left, char* right, int len) -> bool
+.global strncmp
+strncmp:
+	mov rax, 1
+	xor r8, r8
+.Lstrncmp.loop:
+	cmp rdx, r8
+	je .Lstrncmp.end
+	dec rdx
+	mov bl, [rdi]
+	mov cl, [rsi]
+	inc rdi
+	inc rsi
+	cmp bl, cl
+	je .Lstrncmp.loop
+	xor rax, rax
+.Lstrncmp.end:
+	ret
+
+# type: (char* buf, int len) -> bool
+.global isdigit
+isdigit:
+	mov rax, 1
+.Lisdigit.loop:
+	xor rbx, rbx
+	cmp rsi, rbx
+	je .Lisdigit.end
+	mov bl, [rdi]
+	mov cl, 48  # '0'
+	cmp bl, cl
+	jl .Lisdigit.bad
+	mov cl, 57  # '9'
+	cmp bl, cl
+	jg .Lisdigit.bad
+	inc rdi
+	dec rsi
+	jmp .Lisdigit.loop
+.Lisdigit.bad:
+	xor rax, rax
+.Lisdigit.end:
+	ret
+
+# type: (char* buf, int len) -> bool
+.global ishex
+ishex:
+	mov rax, 1
+.Lishex.loop:
+	xor rbx, rbx
+	cmp rsi, rbx
+	je .Lishex.end
+	mov bl, [rdi]
+	mov cl, 48
+	cmp bl, cl
+	jl .Lishex.hex
+	mov cl, 57
+	cmp bl, cl
+	jg .Lishex.hex
+	jmp .Lishex.continue
+.Lishex.hex:
+	mov cl, 97
+	cmp bl, cl
+	jl .Lishex.bad
+	mov cl, 102
+	cmp bl, cl
+	jg .Lishex.bad
+.Lishex.continue:
+	inc rdi
+	dec rsi
+	jmp .Lishex.loop
+.Lishex.bad:
+	xor rax, rax
+.Lishex.end:
+	ret
+
 # type: (char* buf, int len) -> void
 .global reverse_string
 reverse_string:
