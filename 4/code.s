@@ -91,7 +91,8 @@ buf: .ds.b 256
 # 0b0001_0000 / 16: hcl / Hair color
 # 0b0010_0000 / 32: ecl / Eye color
 # 0b0100_0000 / 64: pid / Passport ID
-# 0b0111_1111 / 127 == Passport is valid
+# So:
+# 0b0111_1111 / 127     / Passport is valid
 .global check_line
 check_line:
 	push r14
