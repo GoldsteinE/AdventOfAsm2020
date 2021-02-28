@@ -20,6 +20,11 @@ runstd target: (build target)
 runstd2 target: (build target)
 	"{{target}}/exe" -
 
+test target:
+	as "{{target}}/tests.s" -o "{{target}}/tests.o"
+	ld "{{target}}/tests.o" -o "{{target}}/tests"
+	"{{target}}/tests"
+
 dbg target: (build target)
 	#!/bin/sh
 	set -e

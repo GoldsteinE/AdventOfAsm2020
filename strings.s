@@ -4,11 +4,10 @@
 .global strlen
 strlen:
 	mov rax, rdi
-	xor rbx, rbx
 .Lstrlen.loop:
-	mov rcx, [rax]
-	cmp rcx, rbx
-	je .Lstrlen.end
+	mov cl, [rax]
+	test cl, cl
+	jz .Lstrlen.end
 	inc rax
 	jmp .Lstrlen.loop
 .Lstrlen.end:

@@ -1,4 +1,6 @@
 .env
 exe
 obj.o
+tests.o
+tests
 bak

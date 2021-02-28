@@ -1,8 +1,14 @@
+.ifndef included_stdlib
+included_stdlib:
+
 .intel_syntax noprefix
 
 .include "constants.s"
 .include "strings.s"
 .include "lists.s"
+
+.section .data
+printn_buf: .ds.b 64
 
 .section .text
 
@@ -15,6 +21,33 @@
 	je .Lvariantchosen
 	mov \reg, offset \second
 	.Lvariantchosen:
+.endm
+
+.macro allow_tests
+	.ifdef testing_included
+		jmp run_tests
+	.endif
+.endm
+
+.macro exit code
+	mov rax, SYS_EXIT
+	mov rdi, \code
+	syscall
+.endm
+
+.macro print name
+	mov rdi, offset \name
+	mov rsi, \name\()_len
+	call putsn
+.endm
+
+.macro printn reg
+	mov rdi, \reg
+	mov rsi, offset printn_buf
+	call itos
+	mov rdi, offset printn_buf
+	mov rsi, rax
+	call putsn
 .endm
 
 .macro trysyscall
@@ -115,3 +148,5 @@ readline:
 	sub rsi, rbx
 	mov rbx, rsi
 	ret
+
+.endif
