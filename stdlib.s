@@ -18,9 +18,9 @@ printn_buf: .ds.b 64
 	mov rax, [rsp]
 	mov rbx, 1
 	cmp rax, rbx
-	je .Lvariantchosen
+	je .Lchooseimpl.end
 	mov \reg, offset \second
-	.Lvariantchosen:
+	.Lchooseimpl.end:
 .endm
 
 .macro allow_tests
@@ -52,10 +52,8 @@ printn_buf: .ds.b 64
 
 .macro trysyscall
 	syscall
-	# rcx may be clobbered by syscall anyway
-	xor rcx, rcx
-	cmp rax, rcx
-	jl trysyscall_die
+	test rax, rax
+	js trysyscall_die
 .endm
 
 # type: () -> !
@@ -125,8 +123,6 @@ putnl:
 readline:
 	mov rbx, rdi
 	mov rsi, rdi
-	# r9 is zero
-	xor r9, r9
 	# r10 is newline
 	mov r10, 10
 	mov rdi, STDIN
@@ -134,17 +130,14 @@ readline:
 	mov rax, SYS_READ
 	mov rdx, 1
 	trysyscall
-	cmp rax, r9
-	je .Lreadline.end
-	mov rcx, rax
-	mov rax, 1
+	test rax, rax
+	jz .Lreadline.end
 	mov r8b, [rsi]
 	cmp r8b, r10b
 	je .Lreadline.end
-	add rsi, rcx
+	inc rsi
 	jmp .Lreadline.loop
 .Lreadline.end:
-	movb [rsi], 0
 	sub rsi, rbx
 	mov rbx, rsi
 	ret
