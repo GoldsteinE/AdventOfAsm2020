@@ -111,8 +111,6 @@ reverse_string:
 	cmp rdi, rsi
 	jge .Lreverse_string.end
 	dec rsi
-	xor rcx, rcx
-	xor rdx, rdx
 .Lreverse_string.loop:
 	mov cl, [rsi]
 	mov dl, [rdi]
@@ -169,19 +167,18 @@ split:
 # type: (char* buf, int len) -> int
 .global stoi
 stoi:
-	mov rbx, rdi
-	add rbx, rsi
+	add rsi, rdi
 	xor rax, rax
 	mov r9, 1
 .Lstoi.loop:
-	dec rbx
+	dec rsi
 	xor rcx, rcx
-	mov cl, [rbx]	
+	mov cl, [rsi]
 	sub rcx, 48
 	imul rcx, r9
 	add rax, rcx
 	imul r9, 10
-	cmp rdi, rbx
+	cmp rdi, rsi
 	jne .Lstoi.loop
 	ret
 
@@ -192,17 +189,15 @@ itos:
 	mov rax, rdi
 	mov rdi, rsi
 	mov r9, 10
-	xor r10, r10
 .Litos.loop:
 	xor rdx, rdx
 	div r9
 	add rdx, 48
 	mov [rsi], dl
 	inc rsi
-	cmp rax, r10
-	jne .Litos.loop
+	test rax, rax
+	jnz .Litos.loop
 # End of loop
-	movb [rsi], 0
 	sub rsi, rdi
 	push rsi
 	call reverse_string
