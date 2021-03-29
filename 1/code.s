@@ -1,14 +1,18 @@
 .include "stdlib.s"
 
+.section .data
+buffer: .fill 16
+
 .section .text
 
 # type: (int* start, int* end) -> int
 .global find2_2020
 find2_2020:
 	mov rax, rdi
-	mov rbx, rdi
 	mov r8, 2020
-.Lfind2_2020.loop:
+.Lfind2_2020.outer:
+	mov rbx, rax
+.Lfind2_2020.inner:
 	mov rcx, [rax]
 	mov rdx, [rbx]
 	add rcx, rdx
@@ -16,18 +20,11 @@ find2_2020:
 	je .Lfind2_2020.end
 	add rbx, 8
 	cmp rbx, rsi
-	jg .Lfind2_2020.continue
-	jmp .Lfind2_2020.loop
-.Lfind2_2020.continue:
-	mov rbx, rax
+	jle .Lfind2_2020.inner
 	add rax, 8
 	cmp rax, rsi
-	jg .Lfind2_2020.error
-	jmp .Lfind2_2020.loop
-.Lfind2_2020.error:
-	mov rax, SYS_EXIT
-	mov rdi, 255
-	syscall
+	jle .Lfind2_2020.outer
+	exit 255
 .Lfind2_2020.end:
 	mov rax, [rax]
 	imul rax, rdx
@@ -37,70 +34,58 @@ find2_2020:
 .global find3_2020
 find3_2020:
 	mov rax, rdi
-	mov rbx, rdi
-	mov rcx, rdi
 	mov r8, 2020
-	push rdi
-.Lfind3_2020.loop:
+.Lfind3_2020.outer:
+	mov rbx, rax
+.Lfind3_2020.middle:
+	mov rcx, rbx
+.Lfind3_2020.inner:
 	mov rdx, [rax]
-	mov r9, [rbx]
-	mov r10, [rcx]
+	mov r9,  [rbx]
 	add rdx, r9
-	add rdx, r10
+	mov r9,  [rcx]
+	add rdx, r9
 	cmp rdx, r8
 	je .Lfind3_2020.end
 	add rcx, 8
 	cmp rcx, rsi
-	jg .Lfind3_2020.inner_continue
-	jmp .Lfind3_2020.loop
-.Lfind3_2020.inner_continue:
-	mov rcx, [rsp]
+	jle .Lfind3_2020.inner
 	add rbx, 8
 	cmp rbx, rsi
-	jg .Lfind3_2020.outer_continue
-	jmp .Lfind3_2020.loop
-.Lfind3_2020.outer_continue:
-	mov rbx, [rsp]
-	mov rcx, [rsp]
+	jle .Lfind3_2020.middle
 	add rax, 8
 	cmp rax, rsi
-	jg .Lfind3_2020.error
-	jmp .Lfind3_2020.loop
-.Lfind3_2020.error:
-	mov rax, SYS_EXIT
-	mov rdi, 255
-	syscall
+	jle .Lfind3_2020.outer
+	exit 255
 .Lfind3_2020.end:
 	mov rax, [rax]
 	imul rax, r9
-	imul rax, r10
-	add rsp, 8
+	mov r9,  [rbx]
+	imul rax, r9
 	ret
 
 .global _start
 _start:
+	allow_tests
 	chooseimpl r15, find2_2020, find3_2020
 
-	sub rsp, 16
 	mov r13, rsp
 
 .L_start.input_loop:
-	mov rdi, r13
+	mov rdi, offset buffer
 	call readline
+
+	test rbx, rbx
+	jz .L_start.input_loop_end
 	mov r14, rax
 
-	xor rcx, rcx
-	cmp rcx, rbx
-	je .L_start.input_loop_end
-
-	mov rdi, r13
+	mov rdi, offset buffer
 	mov rsi, rbx
 	call stoi
 	push rax
 
-	xor rcx, rcx
-	cmp rcx, r14
-	jne .L_start.input_loop
+	test r14, r14
+	jnz .L_start.input_loop
 .L_start.input_loop_end:
 
 	mov rdi, rsp
@@ -108,14 +93,12 @@ _start:
 	call r15
 
 	mov rdi, rax
-	mov rsi, r13
+	mov rsi, offset buffer
 	call itos
 
-	mov rdi, r13
+	mov rdi, offset buffer
 	mov rsi, rax
 	call putsn
 	call putnl
 
-	mov rax, SYS_EXIT
-	xor rdi, rdi
-	syscall
+	exit 0
